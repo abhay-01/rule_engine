@@ -39,8 +39,9 @@ const RuleForm = () => {
   
   const handleEvaluateRule = async () => {
     try {
-      const evaluationResult = await evaluateRule(combinedRules[0], userData);
-      setResult(evaluationResult);
+      const evaluationResult = await evaluateRule(userData,combinedRules[0]);
+      console.log("evaluationResult", combinedRules[0], userData);
+      setResult(evaluationResult.result);
       setModalOpen(true);
     } catch (error) {
       console.error('Error evaluating rule:', error);
@@ -104,7 +105,9 @@ const RuleForm = () => {
         <div className="modal">
           <div className="modal-content">
             <span className="close" onClick={closeModal}>&times;</span>
-            <h3>Evaluation Result: {result ? 'Eligible' : 'Not Eligible'}</h3>
+            <h3 style ={{
+              color: result ? 'green' : 'red'
+            }}>Evaluation Result: {result ? 'Eligible' : 'Not Eligible'}</h3>
           </div>
         </div>
       )}

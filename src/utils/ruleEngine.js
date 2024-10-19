@@ -31,6 +31,8 @@ export class Node {
   };
   
   export const evaluateRule = (node, userData) => {
+    console.log("node", node);
+    console.log("userData", userData);
     if (node.type === "operand") {
       const { attribute, operator, value } = node.value;
       const userValue = userData[attribute];

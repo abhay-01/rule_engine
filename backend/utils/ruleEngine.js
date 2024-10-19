@@ -13,8 +13,12 @@ class Node {
  * @returns {Node} - The root node of the AST.
  */
 export const createRule = (ruleString) => {
+  if (!ruleString || typeof ruleString !== 'string') {
+    throw new Error("Invalid ruleString provided.");
+  }
+
   const tokens = ruleString
-    .replace(/\s+/g, "") // Remove whitespace
+    .replace(/\s+/g, "")
     .match(/(?:\d+|[A-Za-z]+|'[A-Za-z]+'|>=|<=|!=|==|>|<|AND|OR|\(|\))/g);
 
   const operators = [];
@@ -108,40 +112,36 @@ export const combineRules = (rules) => {
  * @returns {boolean} - True if the user meets the rule conditions, false otherwise.
  */
 export const evaluateRule = (node, userData) => {
-  if (!node) return false;
+  if (!node) return null;
 
-  const { type, left, right, value } = node;
+  if (node.type === 'operand') {
+    const { field, operator, value } = node.value;
 
-  if (type === "operand") {
-    const { field, operator, value: operandValue } = value;
-
-    const userValue = userData[field]; // Get the relevant field from user data
+    // Ensure userData fields are accessed correctly and compared as numbers where necessary
+    const userValue = userData[field];
 
     switch (operator) {
-      case ">":
-        return userValue > operandValue;
-      case "<":
-        return userValue < operandValue;
-      case ">=":
-        return userValue >= operandValue;
-      case "<=":
-        return userValue <= operandValue;
-      case "==":
-        return userValue === operandValue;
-      case "!=":
-        return userValue !== operandValue;
+      case '>':
+        return userValue > value;
+      case '<':
+        return userValue < value;
+      case '=':
+        return userValue === value;
+      case '>=':
+        return userValue >= value;
+      case '<=':
+        return userValue <= value;
+      case 'AND':
+        return evaluateRule(node.left, userData) && evaluateRule(node.right, userData);
+      case 'OR':
+        return evaluateRule(node.left, userData) || evaluateRule(node.right, userData);
       default:
-        return false; // Invalid operator
+        throw new Error('Invalid operator');
     }
-  } else if (type === "operator") {
-    const leftEval = evaluateRule(left, userData);
-    const rightEval = evaluateRule(right, userData);
-
-    if (value === "AND") return leftEval && rightEval;
-    if (value === "OR") return leftEval || rightEval;
+  } else if (node.type === 'operator') {
+    // Handle logical operators if necessary
+    return evaluateRule(node.left, userData) && evaluateRule(node.right, userData);
   }
-
-  return false;
 };
 
 const ruleEngine = { Node};

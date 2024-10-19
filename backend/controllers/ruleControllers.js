@@ -33,10 +33,20 @@ export const _combineRules = (req, res) => {
 
 // Evaluate a rule
 export const _evaluateRule = (req, res) => {
-    const { ast, userData } = req.body;
-    const result = evaluateRule(ast, userData);
-    res.json({ result });
+  const { userData, ruleAst } = req.body;
+
+  try {
+    console.log('Evaluating rule with AST:', JSON.stringify(ruleAst, null, 2));
+    console.log('User data:', userData);
+
+    const result = evaluateRule(ruleAst, userData);
+    res.json({ success: true, result });
+  } catch (error) {
+    console.error("Error evaluating rule:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 };
+
 
 // Export the controller methods
 // const ruleControllers = {

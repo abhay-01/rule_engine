@@ -27,9 +27,11 @@ export const combineRules = async (requestBody) => {
 
 export const evaluateRule = async (ruleAst, userData) => {
   try {
+    console.log("ruleAst", ruleAst);
+    console.log("userData", userData);
     const response = await axios.post(`${API_BASE_URL}/evaluate`, {
-      ruleAst,
       userData,
+      ruleAst,
     });
     return response.data; // true/false based on evaluation
   } catch (error) {
