@@ -1,8 +1,9 @@
-import { json } from 'body-parser';
+import pkg from 'body-parser';
 import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import ruleRoutes from './routes/ruleRoutes.js';
+const { json } = pkg;
 
 const app = express();
 connectDB();

@@ -12,7 +12,7 @@ class Node {
  * @param {string} ruleString - The rule string to be parsed.
  * @returns {Node} - The root node of the AST.
  */
-const createRule = (ruleString) => {
+export const createRule = (ruleString) => {
   const tokens = ruleString
     .replace(/\s+/g, "") // Remove whitespace
     .match(/(?:\d+|[A-Za-z]+|'[A-Za-z]+'|>=|<=|!=|==|>|<|AND|OR|\(|\))/g);
@@ -34,12 +34,13 @@ const createRule = (ruleString) => {
 
   for (const token of tokens) {
     if (!isNaN(token)) {
-      // Check if the token is a number
+      // It's a number, create a value node (operand)
       operands.push(new Node("operand", null, null, parseFloat(token)));
     } else if (token[0] === "'" && token[token.length - 1] === "'") {
-      // Check if the token is a string
-      operands.push(new Node("operand", null, null, token.slice(1, -1))); // Remove quotes
+      // It's a string, create a value node (operand)
+      operands.push(new Node("operand", null, null, token.slice(1, -1)));
     } else if (token in precedence) {
+      // Handle AND/OR operators
       while (
         operators.length &&
         precedence[operators[operators.length - 1]] >= precedence[token]
@@ -54,6 +55,15 @@ const createRule = (ruleString) => {
         applyOperator();
       }
       operators.pop();
+    } else if (/[A-Za-z]+[<>!=]=?/.test(token)) {
+      // Handle conditions like "age>30"
+      const match = token.match(/([A-Za-z]+)([<>!=]+)(.+)/);
+      if (match) {
+        const [, field, operator, value] = match;
+        operands.push(
+          new Node("operand", null, null, { field, operator, value })
+        );
+      }
     }
   }
 
@@ -69,7 +79,7 @@ const createRule = (ruleString) => {
  * @param {Array<string>} rules - An array of rule strings.
  * @returns {Node} - The root node of the combined AST.
  */
-const combineRules = (rules) => {
+export const combineRules = (rules) => {
   if (rules.length === 0) return null;
 
   const root = new Node("operator", null, null, "AND"); // Combine with AND by default
@@ -97,20 +107,31 @@ const combineRules = (rules) => {
  * @param {Object} userData - An object containing user attributes.
  * @returns {boolean} - True if the user meets the rule conditions, false otherwise.
  */
-const evaluateRule = (node, userData) => {
+export const evaluateRule = (node, userData) => {
   if (!node) return false;
 
   const { type, left, right, value } = node;
 
   if (type === "operand") {
-    if (value.includes("age")) {
-      return userData.age; // Check age
-    } else if (value.includes("department")) {
-      return userData.department; // Check department
-    } else if (value.includes("salary")) {
-      return userData.salary; // Check salary
-    } else if (value.includes("experience")) {
-      return userData.experience; // Check experience
+    const { field, operator, value: operandValue } = value;
+
+    const userValue = userData[field]; // Get the relevant field from user data
+
+    switch (operator) {
+      case ">":
+        return userValue > operandValue;
+      case "<":
+        return userValue < operandValue;
+      case ">=":
+        return userValue >= operandValue;
+      case "<=":
+        return userValue <= operandValue;
+      case "==":
+        return userValue === operandValue;
+      case "!=":
+        return userValue !== operandValue;
+      default:
+        return false; // Invalid operator
     }
   } else if (type === "operator") {
     const leftEval = evaluateRule(left, userData);
@@ -120,9 +141,8 @@ const evaluateRule = (node, userData) => {
     if (value === "OR") return leftEval || rightEval;
   }
 
-  return false; // Default case
+  return false;
 };
 
-const ruleEngine = { Node, createRule, combineRules, evaluateRule };
-
+const ruleEngine = { Node};
 export default ruleEngine;

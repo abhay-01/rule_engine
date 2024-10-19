@@ -1,15 +1,15 @@
 import { Router } from "express";
 import {
-  createRule,
+  _createRule,
   getRules,
-  combineRules,
-  evaluateRule,
-} from "../controllers/ruleController.js";
+  _combineRules,
+  _evaluateRule,
+} from "../controllers/ruleControllers.js";
 const router = Router();
 
-router.post("/rules", createRule);
+router.post("/rules", _createRule);
 router.get("/rules", getRules);
-router.post("/combine", combineRules);
-router.post("/evaluate", evaluateRule);
+router.post("/combine", _combineRules);
+router.post("/evaluate", _evaluateRule);
 
 export default router;
