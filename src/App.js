@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import RuleForm from "./components/RuleForm";
+import RuleList from "./components/RuleList";
+import EvaluateForm from "./components/EvaluateForm";
+import { combineRules } from "./utils/ruleEngine";
 
-function App() {
+const App = () => {
+  const [rules, setRules] = useState([]);
+  const [combinedAST, setCombinedAST] = useState(null);
+
+  const addRule = (ruleString) => {
+    setRules([...rules, ruleString]);
+  };
+
+  const combineAllRules = () => {
+    const ast = combineRules(rules);
+    setCombinedAST(ast);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Rule Engine</h1>
+      <RuleForm onAddRule={addRule} />
+      <RuleList rules={rules} />
+      <button onClick={combineAllRules}>Combine Rules</button>
+      {combinedAST && <EvaluateForm ast={combinedAST} />}
     </div>
   );
-}
+};
 
 export default App;
