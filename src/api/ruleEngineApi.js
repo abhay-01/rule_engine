@@ -6,7 +6,8 @@ const API_BASE_URL = "http://localhost:5000/api";
 export const createRule = async (ruleString) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/rules`, { ruleString });
-    return response.data; // This will be the created AST
+    console.log("FRONTEND KA CREATE RULE", response.data);
+    return response.data;
   } catch (error) {
     console.error("Error creating rule:", error);
     throw error;
@@ -25,7 +26,7 @@ export const combineRules = async (requestBody) => {
   }
 };
 
-export const evaluateRule = async (ruleAst, userData) => {
+export const evaluateRule = async (userData,ruleAst) => {
   try {
     console.log("ruleAst", ruleAst);
     console.log("userData", userData);
@@ -33,7 +34,9 @@ export const evaluateRule = async (ruleAst, userData) => {
       userData,
       ruleAst,
     });
-    return response.data; // true/false based on evaluation
+
+    console.log("RESPONSE--->>", response.data);
+    return response.data;
   } catch (error) {
     console.error("Error evaluating rule:", error);
     throw error;

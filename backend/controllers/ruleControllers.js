@@ -5,6 +5,8 @@ import { createRule, combineRules, evaluateRule } from '../utils/ruleEngine.js';
 export const _createRule = async (req, res) => {
     try {
         const { ruleString } = req.body;
+        const astTree = createRule(ruleString);
+        console.log("astTree check", astTree);
         const newRule = new Rule({ ruleString });
         await newRule.save();
         res.status(201).json(newRule);
@@ -39,7 +41,7 @@ export const _evaluateRule = (req, res) => {
     console.log('Evaluating rule with AST:', JSON.stringify(ruleAst, null, 2));
     console.log('User data:', userData);
 
-    const result = evaluateRule(ruleAst, userData);
+    const result = evaluateRule(userData, ruleAst);
     res.json({ success: true, result });
   } catch (error) {
     console.error("Error evaluating rule:", error);

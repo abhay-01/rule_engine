@@ -11,9 +11,9 @@ const RuleForm = () => {
 
   const handleCreateRule = async () => {
     try {
-      console.log("ruleString", ruleString);
+      // console.log("ruleString", ruleString);
       setCombinedRules([...combinedRules, ruleString]);
-
+      console.log("combinedRules", combinedRules);
       const ast = await createRule(ruleString);
       console.log("ast", ast);
       setRuleString('');
