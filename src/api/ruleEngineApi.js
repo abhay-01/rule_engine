@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Base URL for your backend (adjust if necessary)
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://backend-rule.onrender.com/api";
 
 export const createRule = async (ruleString) => {
   try {
